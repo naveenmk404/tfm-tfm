@@ -28,15 +28,21 @@ residuals_list, metrics = zip(*[(res, (mean, var, rmse)) for res, mean, var, rms
 acf_pacf_results = [(acf(res, nlags=20), pacf(res, nlags=20)) for res in residuals_list]
 
 # Plotting
-fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+n_models = len(arma_params)
+fig, axes = plt.subplots(n_models, 2, figsize=(14, 5 * n_models))
 titles = ['ACF of ARMA(1) Residuals', 'PACF of ARMA(1) Residuals', 
           'ACF of ARMA(2) Residuals', 'PACF of ARMA(2) Residuals']
 
-for i, ((acf_vals, pacf_vals), title) in enumerate(zip(acf_pacf_results, titles)):
-    axes[i//2, i%2].stem(acf_vals if i%2 == 0 else pacf_vals, use_line_collection=True)
-    axes[i//2, i%2].set_title(title)
-    axes[i//2, i%2].set_xlabel('Lag')
-    axes[i//2, i%2].set_ylabel('ACF' if i%2 == 0 else 'PACF')
+for i, ((acf_vals, pacf_vals), title_acf, title_pacf) in enumerate(zip(acf_pacf_results, titles[::2], titles[1::2])):
+    axes[i, 0].stem(acf_vals, use_line_collection=True)
+    axes[i, 0].set_title(title_acf)
+    axes[i, 0].set_xlabel('Lag')
+    axes[i, 0].set_ylabel('ACF')
+    
+    axes[i, 1].stem(pacf_vals, use_line_collection=True)
+    axes[i, 1].set_title(title_pacf)
+    axes[i, 1].set_xlabel('Lag')
+    axes[i, 1].set_ylabel('PACF')
 
 plt.tight_layout()
 plt.show()
